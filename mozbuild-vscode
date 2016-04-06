@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [[ -z "$1" ]] ; then
+    echo "Usage: mozbuild_vscode <path to sourcedir>"
+    exit 1
+fi
+
+if [[ ! -f "${1}/mach" ]] ; then
+    echo "${1} does not appear to be a gecko source directory!"
+    exit 1
+fi
+
+cd "$1"
+./mach --log-no-times build
