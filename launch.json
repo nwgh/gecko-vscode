@@ -1,8 +1,8 @@
 {
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"configurations": [
 		{
-			"name": "Debug No Opt",
+			"name": "OSX Debug",
 			"type": "cppdbg",
 			"request": "launch",
 			"launchOptionType": "Local",
@@ -12,6 +12,19 @@
 			"args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"],
 			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS",
+			"environment": []
+		},
+		{
+			"name": "Linux Debug",
+			"type": "cppdbg",
+			"request": "launch",
+			"launchOptionType": "Local",
+			"miDebuggerPath": "/usr/bin/gdb",
+			"targetArchitecture": "x64",
+			"program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
+			"args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"],
+			"stopAtEntry": false,
+			"cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
 			"environment": []
 		}
 	]
