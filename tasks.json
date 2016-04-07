@@ -1,21 +1,45 @@
 {
 	// See http://go.microsoft.com/fwlink/?LinkId=733558
 	// for the documentation about the tasks.json format
-	"version": "0.1.6",
+	"version": "0.2.0",
 	"command": "${workspaceRoot}/.vscode/mozbuild-vscode",
 	"isShellCommand": true,
 	"args": ["${workspaceRoot}"],
 	"showOutput": "always",
-    "problemMatcher": {
-        "owner": "cpp",
-        "fileLocation": "absolute",
-        "pattern": {
-            "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
-            "file": 1,
-            "line": 2,
-            "column": 3,
-            "severity": 4,
-            "message": 5
+    "tasks": [
+        {
+            "taskName": "Full Build",
+            "suppressTaskName": true,
+            "isBuildCommand": true,
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                 "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "taskName": "Binaries Build",
+            "suppressTaskName": true,
+            "args": ["binaries"],
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                 "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
         }
-    }
+    ]
 }

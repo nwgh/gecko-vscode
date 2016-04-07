@@ -11,4 +11,10 @@ if [[ ! -f "${1}/mach" ]] ; then
 fi
 
 cd "$1"
-./mach --log-no-times build
+
+BUILDTARGET=""
+if [[ -n "$2" ]] ; then
+    BUILDTARGET="$2"
+fi
+
+./mach --log-no-times build "$BUILDTARGET"
