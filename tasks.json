@@ -2,15 +2,16 @@
 	// See http://go.microsoft.com/fwlink/?LinkId=733558
 	// for the documentation about the tasks.json format
 	"version": "0.2.0",
-	"command": "${workspaceRoot}/.vscode/mozbuild-vscode",
+	"command": "./mach",
 	"isShellCommand": true,
-	"args": ["${workspaceRoot}"],
+	"args": ["--log-no-times", "build"],
 	"showOutput": "always",
     "tasks": [
         {
             "taskName": "Full Build",
             "suppressTaskName": true,
             "isBuildCommand": true,
+            "options": {"cwd": "${workspaceRoot}"},
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": "absolute",
@@ -27,6 +28,7 @@
         {
             "taskName": "Binaries Build",
             "suppressTaskName": true,
+            "options": {"cwd": "${workspaceRoot}"},
             "args": ["binaries"],
             "problemMatcher": {
                 "owner": "cpp",
