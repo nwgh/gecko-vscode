@@ -2,31 +2,17 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "C++ Launch (GDB)",
+			"name": "Debug No Opt",
 			"type": "cppdbg",
 			"request": "launch",
 			"launchOptionType": "Local",
 			"miDebuggerPath": "/usr/local/bin/gdb",
 			"targetArchitecture": "x64",
 			"program": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS/firefox",
-			"args": [],
+			"args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"],
 			"stopAtEntry": false,
-			"cwd": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS/firefox",
+			"cwd": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS",
 			"environment": []
-		},
-		{
-			"name": "C++ Attach (GDB)",
-			"type": "cppdbg",
-			"request": "launch",
-			"launchOptionType": "Local",
-			"miDebuggerPath": "/usr/local/bin/gdb",
-			"targetArchitecture": "x64",
-			"program": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS/firefox",
-			"args": [],
-			"stopAtEntry": false,
-			"cwd": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS/firefox",
-			"environment": [],
-			"processId": "enter program's process ID"
 		}
 	]
 }
