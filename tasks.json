@@ -1,17 +1,18 @@
 {
 	// See http://go.microsoft.com/fwlink/?LinkId=733558
 	// for the documentation about the tasks.json format
-	"version": "0.2.0",
+	"version": "0.3.1",
 	"command": "./mach",
 	"isShellCommand": true,
-	"args": ["--log-no-times", "build"],
+	"args": ["--log-no-times"],
+    "options": {"cwd": "${workspaceRoot}", "env": {"NSPR_LOG_MODULES": "timestamp,nsHttp:5", "NSPR_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log"}},
 	"showOutput": "always",
     "tasks": [
         {
             "taskName": "Full Build",
             "suppressTaskName": true,
             "isBuildCommand": true,
-            "options": {"cwd": "${workspaceRoot}"},
+            "args": ["build"],
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": "absolute",
@@ -28,8 +29,7 @@
         {
             "taskName": "Binaries Build",
             "suppressTaskName": true,
-            "options": {"cwd": "${workspaceRoot}"},
-            "args": ["binaries"],
+            "args": ["build", "binaries"],
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": "absolute",
@@ -40,6 +40,22 @@
                     "column": 3,
                     "severity": 4,
                     "message": 5
+                }
+            }
+        },
+        {
+            "taskName": "Run with HTTP Logging",
+            "suppressTaskName": true,
+            "args": ["run"],
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                "severity": "error",
+                 "pattern": {
+                    "regexp": "^Assertion failure: (.+), at ([a-zA-Z0-9+/.-_]+):([0-9]+)$"
+                    "file": 2,
+                    "line": 3,
+                    "message": 1
                 }
             }
         }
