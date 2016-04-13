@@ -1,7 +1,7 @@
 {
 	// See http://go.microsoft.com/fwlink/?LinkId=733558
 	// for the documentation about the tasks.json format
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"command": "./mach",
 	"isShellCommand": true,
 	"args": ["--log-no-times"],
@@ -58,6 +58,11 @@
                     "message": 1
                 }
             }
+        },
+        {
+            "taskName": "Clobber",
+            "suppressTaskName": true,
+            "args": ["clobber"]
         }
     ]
 }
