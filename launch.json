@@ -12,7 +12,7 @@
 			"args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"],
 			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS",
-			"environment": []
+            "env": {"MOZ_LOG": "timestamp,nsHttp:5", "MOZ_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log"}
 		},
 		{
 			"name": "Linux Debug",
@@ -25,7 +25,7 @@
 			"args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"],
 			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
-			"environment": []
+            "env": {"MOZ_LOG": "timestamp,nsHttp:5", "MOZ_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log"}
 		}
 	]
 }

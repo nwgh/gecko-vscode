@@ -5,7 +5,7 @@
 	"command": "./mach",
 	"isShellCommand": true,
 	"args": ["--log-no-times"],
-    "options": {"cwd": "${workspaceRoot}", "env": {"NSPR_LOG_MODULES": "timestamp,nsHttp:5", "NSPR_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log"}},
+    "options": {"cwd": "${workspaceRoot}", "env": {"MOZ_LOG": "timestamp,nsHttp:5", "MOZ_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log"}},
 	"showOutput": "always",
     "tasks": [
         {
