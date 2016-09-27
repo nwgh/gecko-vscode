@@ -2,6 +2,7 @@
 {
     "files.exclude": {
         "**/.vscode": true,
-        "**/.hg": true
+        "**/.hg": true,
+        "**/obj-*": true
     }
 }

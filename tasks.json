@@ -1,12 +1,12 @@
 {
-	// See http://go.microsoft.com/fwlink/?LinkId=733558
-	// for the documentation about the tasks.json format
-	"version": "0.3.2",
-	"command": "./mach",
-	"isShellCommand": true,
-	"args": ["--log-no-times"],
+    // See http://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "0.1.0",
+    "command": "./mach",
+    "isShellCommand": true,
+    "args": ["--log-no-times"],
     "options": {"cwd": "${workspaceRoot}", "env": {"MOZ_LOG": "timestamp,nsHttp:5", "MOZ_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log"}},
-	"showOutput": "always",
+    "showOutput": "always",
     "tasks": [
         {
             "taskName": "Full Build",

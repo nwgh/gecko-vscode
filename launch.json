@@ -1,31 +1,53 @@
 {
-	"version": "0.2.1",
-	"configurations": [
-		{
-			"name": "OSX Debug",
-			"type": "cppdbg",
-			"request": "launch",
-			"launchOptionType": "Local",
-			"miDebuggerPath": "/usr/local/bin/gdb",
-			"targetArchitecture": "x64",
-			"program": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS/firefox",
-			"args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"],
-			"stopAtEntry": false,
-			"cwd": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS",
-            "env": {"MOZ_LOG": "timestamp,nsHttp:5", "MOZ_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log"}
-		},
-		{
-			"name": "Linux Debug",
-			"type": "cppdbg",
-			"request": "launch",
-			"launchOptionType": "Local",
-			"miDebuggerPath": "/usr/bin/gdb",
-			"targetArchitecture": "x64",
-			"program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
-			"args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"],
-			"stopAtEntry": false,
-			"cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
-            "env": {"MOZ_LOG": "timestamp,nsHttp:5", "MOZ_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log"}
-		}
-	]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "stopAtEntry": false,
+            "environment": [{"name": "MOZ_LOG", "value": "timestamp,nsHttp:5"},
+                            {"name": "MOZ_LOG_FILE", "value": "/tmp/nspr.log"},
+                            {"name": "SSLKEYLOGFILE", "value": "/tmp/nsskeys.log"}],
+            "linux": {
+                "MIMode": "gdb",
+                "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
+                "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
+                "args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"]
+            },
+            "osx": {
+                "MIMode": "lldb",
+                "program": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/firefox",
+                "cwd": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS",
+                "args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"]
+            },
+            "windows": {
+                "MIMode": "gdb",
+                "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox.exe",
+                "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
+                "args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"]
+            }
+        },
+        {
+            "name": "C++ Attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "processId": "${command.pickProcess}",
+            "linux": {
+                "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
+                "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
+                "MIMode": "gdb"
+            },
+            "osx": {
+                "program": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS/firefox",
+                "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/NightlyDebug.app/Contents/MacOS",
+                "MIMode": "lldb"
+            },
+            "windows": {
+                "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox.exe",
+                "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
+                "MIMode": "gdb"
+            }
+        }
+    ]
 }

@@ -2,7 +2,7 @@
     "configurations": [
         {
             "name": "Mac",
-            "includePath": ["/usr/include"]
+            "includePath": ["/usr/include", "/Users/nwgh/src/mozilla/gecko/obj-dbg-noopt/dist/include"]
         },
         {
             "name": "Linux",
