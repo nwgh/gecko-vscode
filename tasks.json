@@ -5,7 +5,7 @@
     "command": "./mach",
     "isShellCommand": true,
     "args": ["--log-no-times"],
-    "options": {"cwd": "${workspaceRoot}", "env": {"MOZ_LOG": "timestamp,nsHttp:5", "MOZ_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log"}},
+    "options": {"cwd": "${workspaceRoot}", "env": {"MOZ_LOG": "timestamp,nsHttp:5", "MOZ_LOG_FILE": "/tmp/nspr.log", "SSLKEYLOGFILE": "/tmp/nsskeys.log", "SSLDEBUG": "1", "SSLTRACE": "127", "SSLDEBUGFILE": "/tmp/nssdebug.log"}},
     "showOutput": "always",
     "tasks": [
         {
@@ -44,7 +44,7 @@
             }
         },
         {
-            "taskName": "Run with HTTP Logging",
+            "taskName": "Run (temporary profile)",
             "suppressTaskName": true,
             "args": ["run"],
             "problemMatcher": {
@@ -52,7 +52,57 @@
                 "fileLocation": "absolute",
                 "severity": "error",
                  "pattern": {
-                    "regexp": "^Assertion failure: (.+), at ([a-zA-Z0-9+/.-_]+):([0-9]+)$"
+                    "regexp": "^Assertion failure: (.+), at ([a-zA-Z0-9+/.-_]+):([0-9]+)$",
+                    "file": 2,
+                    "line": 3,
+                    "message": 1
+                }
+            }
+        },
+        {
+            "taskName": "RR Record (temporary profile)",
+            "suppressTaskName": true,
+            "args": ["run", "--debugger=rr"],
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                "severity": "error",
+                 "pattern": {
+                    "regexp": "^Assertion failure: (.+), at ([a-zA-Z0-9+/.-_]+):([0-9]+)$",
+                    "file": 2,
+                    "line": 3,
+                    "message": 1
+                }
+            }
+        },
+        {
+            "taskName": "Run (profile picker)",
+            "suppressTaskName": true,
+            "command": "/home/nwgh/src/firefox-profile-picker/node_modules/.bin/electron",
+            "args": ["/home/nwgh/src/firefox-profile-picker"],
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                "severity": "error",
+                 "pattern": {
+                    "regexp": "^Assertion failure: (.+), at ([a-zA-Z0-9+/.-_]+):([0-9]+)$",
+                    "file": 2,
+                    "line": 3,
+                    "message": 1
+                }
+            }
+        },
+        {
+            "taskName": "RR Record (profile picker)",
+            "suppressTaskName": true,
+            "command": "/home/nwgh/src/firefox-profile-picker/node_modules/.bin/electron",
+            "args": ["/home/nwgh/src/firefox-profile-picker", "--rr-record"],
+            "problemMatcher": {
+                "owner": "cpp",
+                "fileLocation": "absolute",
+                "severity": "error",
+                 "pattern": {
+                    "regexp": "^Assertion failure: (.+), at ([a-zA-Z0-9+/.-_]+):([0-9]+)$",
                     "file": 2,
                     "line": 3,
                     "message": 1
