@@ -2,20 +2,45 @@
     "configurations": [
         {
             "name": "Mac",
-            "includePath": ["/usr/include", "/Users/nwgh/src/mozilla/gecko/obj-dbg/dist/include"]
+            "includePath": [
+                "/usr/include",
+                "/Users/nwgh/src/mozilla/gecko/obj-dbg/dist/include"
+            ],
+            "browse": {
+                "path": [
+                    "/usr/include",
+                    "/Users/nwgh/src/mozilla/gecko/obj-dbg/dist/include"
+                ]
+            }
         },
         {
             "name": "Linux",
-            "includePath": ["/usr/include"]
+            "includePath": [
+                "/usr/include",
+                "/home/nwgh/src/mozilla/gecko/obj-dbg-noopt/dist/include"
+            ],
+            "browse": {
+                "path": [
+                    "/usr/include",
+                    "/home/nwgh/src/mozilla/gecko/obj-dbg-noopt/dist/include"
+                ]
+            }
         },
         {
             "name": "Win32",
-            "includePath": ["c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"]
+            "includePath": [
+                "c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"
+            ],
+            "browse": {
+                "path": [
+                    "c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"
+                ]
+            }
         }
     ],
-    "clang_format" : {
-        "style" : "file",
-        "fallback-style" : "LLVM",
-        "sort-includes" : "false"
+    "clang_format": {
+        "style": "file",
+        "fallback-style": "LLVM",
+        "sort-includes": "false"
     }
 }
