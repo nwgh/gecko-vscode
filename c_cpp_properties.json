@@ -4,27 +4,41 @@
             "name": "Mac",
             "includePath": [
                 "/usr/include",
-                "/Users/nwgh/src/mozilla/gecko/obj-dbg/dist/include"
+                "/Users/nwgh/src/mozilla/gecko/obj-dbg/dist/include",
+                "/Users/nwgh/.local/clang/current/include/c++/v1",
+                "${workspaceRoot}/obj-dbg/dist/include",
+                "${workspaceRoot}/obj-dbg/dist/include/nspr"
             ],
             "browse": {
                 "path": [
                     "/usr/include",
-                    "/Users/nwgh/src/mozilla/gecko/obj-dbg/dist/include"
+                    "/Users/nwgh/src/mozilla/gecko/obj-dbg/dist/include",
+                    "/Users/nwgh/.local/clang/current/include/c++/v1",
+                    "${workspaceRoot}/obj-dbg/dist/include",
+                    "${workspaceRoot}/obj-dbg/dist/include/nspr"
                 ]
-            }
+            },
+            "intelliSenseMode": "clang-x64"
         },
         {
             "name": "Linux",
             "includePath": [
                 "/usr/include",
-                "/home/nwgh/src/mozilla/gecko/obj-dbg-noopt/dist/include"
+                "/home/nwgh/src/mozilla/gecko/obj-dbg-noopt/dist/include",
+                "/home/nwgh/.local/clang/current/include/c++/v1",
+                "${workspaceRoot}/obj-dbg-noopt/dist/include",
+                "${workspaceRoot}/obj-dbg-noopt/dist/include/nspr"
             ],
             "browse": {
                 "path": [
                     "/usr/include",
-                    "/home/nwgh/src/mozilla/gecko/obj-dbg-noopt/dist/include"
+                    "/home/nwgh/src/mozilla/gecko/obj-dbg-noopt/dist/include",
+                    "/home/nwgh/.local/clang/current/include/c++/v1",
+                    "${workspaceRoot}/obj-dbg-noopt/dist/include",
+                    "${workspaceRoot}/obj-dbg-noopt/dist/include/nspr"
                 ]
-            }
+            },
+            "intelliSenseMode": "clang-x64"
         },
         {
             "name": "Win32",
@@ -35,7 +49,8 @@
                 "path": [
                     "c:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include"
                 ]
-            }
+            },
+            "intelliSenseMode": "msvc-x64"
         }
     ],
     "clang_format": {
