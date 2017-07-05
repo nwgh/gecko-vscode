@@ -172,7 +172,7 @@
                 "MOZ_WEBRTC_ASSERT_ALWAYS=1",
                 "MOZ_WEBRTC_SIGNALING=1",
                 "MOZ_WEBSPEECH=1",
-                "MOZ_WEBSPEECH_TEST_BACKED=1",
+                "MOZ_WEBSPEECH_TEST_BACKEND=1",
                 "MOZ_WIDGET_COCOA=1",
                 "MOZ_XUL=1",
                 "NIGHTLY_BUILD=1",
