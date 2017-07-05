@@ -202,8 +202,12 @@
         {
             "name": "Linux",
             "includePath": [
+                "/usr/include/c++/6.3.1",
+                "/usr/include/c++/6.3.1/x86_64-redhat-linux",
+                "/usr/include/c++/6.3.1/backward",
+                "/usr/local/include",
+                "/home/nwgh/.local/clang/3.8.0/bin/../lib/clang/3.8.0/include",
                 "/usr/include",
-                "/home/nwgh/.local/clang/current/include/c++/v1",
                 "${workspaceRoot}/obj-dbg-noopt/dist/include",
                 "${workspaceRoot}/obj-dbg-noopt/dist/include/nspr",
                 "${workspaceRoot}/obj-dbg-noopt/ipc/ipdl/_ipdlheaders"
@@ -211,8 +215,12 @@
             ],
             "browse": {
                 "path": [
+                    "/usr/include/c++/6.3.1",
+                    "/usr/include/c++/6.3.1/x86_64-redhat-linux",
+                    "/usr/include/c++/6.3.1/backward",
+                    "/usr/local/include",
+                    "/home/nwgh/.local/clang/3.8.0/bin/../lib/clang/3.8.0/include",
                     "/usr/include",
-                    "/home/nwgh/.local/clang/current/include/c++/v1",
                     "${workspaceRoot}/obj-dbg-noopt/dist/include",
                     "${workspaceRoot}/obj-dbg-noopt/dist/include/nspr",
                     "${workspaceRoot}/obj-dbg-noopt/ipc/ipdl/_ipdlheaders"
