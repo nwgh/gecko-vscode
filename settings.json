@@ -68,7 +68,16 @@
         "dwarf.c": "cpp",
         "infback9.c": "cpp",
         "untgz.c": "cpp",
-        "mp3sniff.c": "cpp"
-    },
-    "git.enabled": false
+        "mp3sniff.c": "cpp",
+        "cmscgats.c": "cpp",
+        "zic.c": "cpp",
+        "fsg_model.c": "cpp",
+        "enough.c": "cpp",
+        "cstddef": "cpp",
+        "cairo-gl-glyphs.c": "cpp",
+        "nestegg.c": "cpp",
+        "ftcmanag.c": "cpp",
+        "comment.c": "cpp",
+        "*.cfg": "cpp"
+    }
 }
