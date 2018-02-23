@@ -32,9 +32,9 @@
       {
         "label": "build",
         "type":"shell",
-        "command": "${workspaceRoot}/.vscode/mach",
+        "command": "${workspaceRoot}/.vscode/build",
         "windows": {
-          "command": "\"\\mozilla-build\\start-shell.bat .vscode/mach\""
+          "command": "\"\\mozilla-build\\start-shell.bat .vscode/build\""
         },
         "args": ["${workspaceRoot}"],
         "problemMatcher": {

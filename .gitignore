@@ -1,3 +1,4 @@
 .browse.VC.db*
 extensions.json
 tasks.json
+last-build-config.json

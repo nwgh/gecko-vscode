@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+# A script to ensure that, after we build, we regenerate the CompileDB so that
+# vs code can complete things properly. Also tries to be smart and do a full
+# build if necessary, and do just build binaries when possible to save time.
+
+# TODO - make this work on windows! - Should "just" involve massaging
+# workspace_dir from a windows path (which is what vs code provides) into a
+# msys/wsl path.
+
+import json
+import os
+import subprocess
+import sys
+
+workspace_dir = sys.argv[1]
+
+p = subprocess.Popen(['./mach', 'environment', '--format', 'json'], cwd=workspace_dir, stdout=subprocess.PIPE)
+p.wait()
+environment = json.load(p.stdout)
+object_dir = environment['topobjdir']
+
+ccache_path = None
+for arg in environment['mozconfig']['configure_args']:
+    if arg.startswith('--with-ccache='):
+        ccache_path = arg.split('=')[1]
+
+vscode_dir = os.path.join(workspace_dir, '.vscode')
+build_config_file = os.path.join(vscode_dir, 'last-build-config.json')
+last_build_config = {'result': None, 'command': 'build', 'head': None}
+with file(build_config_file) as f:
+    last_build_config.update(json.load(f))
+
+head_file = os.path.join(workspace_dir, '.git', 'HEAD')
+current_head = last_build_config['head']
+with file(head_file) as f:
+    current_head = f.read().strip()
+
+if last_build_config['head'] != current_head:
+    # We've changed branches, do a full rebuild
+    command = 'build'
+elif last_build_config['result'] != 0:
+    # This failed last time, so just try the same one again
+    command = last_build_config['command']
+else:
+    # We can try just building the binaries
+    command = 'binaries'
+
+last_build_config['command'] = command
+last_build_config['head'] = current_head
+
+args = ['./mach', '--log-no-times', 'build']
+if command == 'binaries':
+    args.append('binaries')
+
+result = subprocess.call(args, cwd=workspace_dir)
+last_build_config['result'] = result
+if command == 'build' and result == 0:
+    # Now is the time to update the compile_commands.json used by vs code
+    subprocess.call(['./mach', '--log-no-times', 'build-backend', '-b', 'CompileDB'], cwd=workspace_dir)
+
+    # Since mach puts the ccache command in our compiledb, we need to strip that
+    # information out so as to not confuse vs code
+    if ccache_path:
+        sed_command = 's/%s //g' % (ccache_path.replace('/', '\\/'),)
+        compile_commands = os.path.join(object_dir, 'compile_commands.json')
+        new_compile_commands = '%s.new' % (compile_commands,)
+        with file(compile_commands) as old:
+            with file(new_compile_commands, 'w') as new:
+                subprocess.call(['sed', '-e', sed_command], stdin=old, stdout=new)
+        os.rename(new_compile_commands, compile_commands)
+
+# Update our on-disk status
+with file(build_config_file, 'w') as f:
+    json.dump(last_build_config, f)
