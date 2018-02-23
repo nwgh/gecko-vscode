@@ -52,6 +52,7 @@ args = ['./mach', '--log-no-times', 'build']
 if command == 'binaries':
     args.append('binaries')
 
+sys.stdout.write('> Running %s\n' % (' '.join(args),))
 result = subprocess.call(args, cwd=workspace_dir)
 last_build_config['result'] = result
 if command == 'build' and result == 0:
