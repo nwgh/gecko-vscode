@@ -12,7 +12,7 @@
                             {"name": "SSLKEYLOGFILE", "value": "/tmp/nsskeys.log"}],
             "program": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/firefox",
             "cwd": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS",
-            "args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"]
+            "args": ["-no-remote", "-profile", "${env:HOME}/.mozprofiles/debug"]
         },
         {
             "name": "Linux Debug",
@@ -25,7 +25,7 @@
             "MIMode": "gdb",
             "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
             "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
-            "args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"]
+            "args": ["-no-remote", "-profile", "${env:HOME}/.mozprofiles/debug"]
         },
         {
             "name": "Windows Debug",
@@ -38,33 +38,38 @@
             "MIMode": "gdb",
             "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox.exe",
             "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
-            "args": ["-no-remote", "-profile", "${env.HOME}/.mozprofiles/debug"]
+            "args": ["-no-remote", "-profile", "${env:HOME}/.mozprofiles/debug"]
         },
         {
             "name": "Mac Attach",
             "type": "cppdbg",
             "request": "attach",
-            "processId": "${command.pickProcess}",
+            "processId": "${command:pickProcess}",
             "program": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/firefox",
-            "cwd": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS",
+            "MIMode": "lldb"
+        },
+        {
+            "name": "Mac Attach (Child)",
+            "type": "cppdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "program": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container",
             "MIMode": "lldb"
         },
         {
             "name": "Linux Attach",
             "type": "cppdbg",
             "request": "attach",
-            "processId": "${command.pickProcess}",
+            "processId": "${command:pickProcess}",
             "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
-            "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
             "MIMode": "gdb"
         },
         {
             "name": "Windows Attach",
             "type": "cppdbg",
             "request": "attach",
-            "processId": "${command.pickProcess}",
+            "processId": "${command:pickProcess}",
             "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox.exe",
-            "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
             "MIMode": "gdb"
         }
     ]
