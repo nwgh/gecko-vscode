@@ -59,6 +59,27 @@
         }
       },
       {
+        "label": "build-full",
+        "type":"shell",
+        "command": "${workspaceRoot}/.vscode/build",
+        "windows": {
+          "command": "\"\\mozilla-build\\start-shell.bat .vscode/build\""
+        },
+        "args": ["${workspaceRoot}", "force"],
+        "problemMatcher": {
+          "owner": "cpp",
+          "fileLocation": "absolute",
+          "pattern": {
+            "regexp": "^.*?([^\\s]*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+          }
+        }
+      },
+      {
         "label": "build-binaries",
         "type":"shell",
         "command": "${workspaceRoot}/mach",

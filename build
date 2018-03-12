@@ -8,6 +8,23 @@ import os
 import subprocess
 import sys
 
+def is_branch(ref):
+    if ref.startswith('ref: '):
+        return True
+    return False
+
+
+def rebased(ref):
+    if is_branch(ref):
+        ref = ref.split(' ', 1)[1]
+    ref = subprocess.check_output(['git', 'rev-parse', ref])
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+    if subprocess.call(['git', 'merge-base', '--is-ancestor', ref, head]) == 0:
+        # ref is an ancestor of head, therefore head has not been rebased wrt
+        # ref.
+        return False
+    return True
+
 if sys.platform != 'win32':
     workspace_dir = sys.argv[1]
     mach = ['./mach']
@@ -17,6 +34,10 @@ else: # sys.platform == 'win32'
     if not workspace_dir:
         sys.stderr.write('Could not find workspace folder\n')
         sys.exit(1)
+
+force_rebuild = False
+if len(sys.argv) > 2 and sys.argv[2] == 'force':
+    force_rebuild = True
 
 p = subprocess.Popen(mach + ['environment', '--format', 'json'], cwd=workspace_dir, stdout=subprocess.PIPE)
 p.wait()
@@ -35,12 +56,17 @@ with file(build_config_file) as f:
     last_build_config.update(json.load(f))
 
 head_file = os.path.join(workspace_dir, '.git', 'HEAD')
-current_head = last_build_config['head']
+last_head = current_head = last_build_config['head']
 with file(head_file) as f:
     current_head = f.read().strip()
 
-if last_build_config['head'] != current_head:
+if force_rebuild:
+    command = 'build'
+elif is_branch(last_head) and last_head != current_head:
     # We've changed branches, do a full rebuild
+    command = 'build'
+elif rebased(last_head):
+    # The branch we were on has been rebased, do a full rebuild
     command = 'build'
 elif last_build_config['result'] != 0:
     # This failed last time, so just try the same one again
