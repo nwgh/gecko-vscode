@@ -8,20 +8,19 @@ import os
 import subprocess
 import sys
 
-def is_branch(ref):
+
+def ensure_sha(ref):
     if ref.startswith('ref: '):
-        return True
-    return False
-
-
-def rebased(ref):
-    if is_branch(ref):
         ref = ref.split(' ', 1)[1]
-    ref = subprocess.check_output(['git', 'rev-parse', ref])
-    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+    return subprocess.check_output(['git', 'rev-parse', ref]).strip()
+
+
+def different_branch(ref):
+    ref = ensure_sha(ref)
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
     if subprocess.call(['git', 'merge-base', '--is-ancestor', ref, head]) == 0:
-        # ref is an ancestor of head, therefore head has not been rebased wrt
-        # ref.
+        # ref is an ancestor of head, therefore we are effectively on the same
+        # branch (for the purposes of building - headers won't have changed)
         return False
     return True
 
@@ -35,9 +34,14 @@ else: # sys.platform == 'win32'
         sys.stderr.write('Could not find workspace folder\n')
         sys.exit(1)
 
-force_rebuild = False
-if len(sys.argv) > 2 and sys.argv[2] == 'force':
-    force_rebuild = True
+forced_command = None
+if len(sys.argv) > 2:
+    if sys.argv[2] == 'force':
+        forced_command = 'build'
+    elif sys.argv[2] == 'clobber':
+        forced_command = 'clobber'
+    elif sys.argv[2] == 'binaries':
+        forced_command = 'binaries'
 
 p = subprocess.Popen(mach + ['environment', '--format', 'json'], cwd=workspace_dir, stdout=subprocess.PIPE)
 p.wait()
@@ -58,15 +62,16 @@ with file(build_config_file) as f:
 head_file = os.path.join(workspace_dir, '.git', 'HEAD')
 last_head = current_head = last_build_config['head']
 with file(head_file) as f:
-    current_head = f.read().strip()
+    current_head = ensure_sha(f.read().strip())
 
-if force_rebuild:
-    command = 'build'
-elif is_branch(last_head) and last_head != current_head:
-    # We've changed branches, do a full rebuild
-    command = 'build'
-elif rebased(last_head):
-    # The branch we were on has been rebased, do a full rebuild
+if forced_command:
+    command = forced_command
+    if forced_command == 'clobber':
+        subprocess.call(mach + ['clobber'], cwd=workspace_dir)
+        command = 'build'
+elif different_branch(last_head):
+    # We are on a branch that is not a descendent of the last branch we worked
+    # on, so force a full rebuild to ensure new headers, etc are picked up.
     command = 'build'
 elif last_build_config['result'] != 0:
     # This failed last time, so just try the same one again
