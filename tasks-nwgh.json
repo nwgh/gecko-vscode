@@ -34,7 +34,11 @@
         "type":"shell",
         "command": "${workspaceRoot}/.vscode/build",
         "windows": {
-          "command": "\"\\mozilla-build\\start-shell.bat .vscode/build\""
+          "command": "\"\\mozilla-build\\start-shell.bat /c/src/mozilla/gecko/.vscode/build\"",
+          "args": [],
+          "options": {
+            "env": {"NWGH_WORKSPACE_FOLDER": "${workspaceFolder}"}
+          }
         },
         "args": ["${workspaceRoot}"],
         "problemMatcher": {
