@@ -3,18 +3,22 @@
 # vs code can complete things properly. Also tries to be smart and do a full
 # build if necessary, and do just build binaries when possible to save time.
 
-# TODO - make this work on windows! - Should "just" involve massaging
-# workspace_dir from a windows path (which is what vs code provides) into a
-# msys/wsl path.
-
 import json
 import os
 import subprocess
 import sys
 
-workspace_dir = sys.argv[1]
+if sys.platform != 'win32':
+    workspace_dir = sys.argv[1]
+    mach = ['./mach']
+else: # sys.platform == 'win32'
+    mach = ['c:\\mozilla-build\\start-shell.bat', 'mach']
+    workspace_dir = os.environ.get('NWGH_WORKSPACE_FOLDER', None)
+    if not workspace_dir:
+        sys.stderr.write('Could not find workspace folder\n')
+        sys.exit(1)
 
-p = subprocess.Popen(['./mach', 'environment', '--format', 'json'], cwd=workspace_dir, stdout=subprocess.PIPE)
+p = subprocess.Popen(mach + ['environment', '--format', 'json'], cwd=workspace_dir, stdout=subprocess.PIPE)
 p.wait()
 environment = json.load(p.stdout)
 object_dir = environment['topobjdir']
@@ -48,7 +52,7 @@ else:
 last_build_config['command'] = command
 last_build_config['head'] = current_head
 
-args = ['./mach', '--log-no-times', 'build']
+args = mach + ['--log-no-times', 'build']
 if command == 'binaries':
     args.append('binaries')
 
@@ -57,7 +61,7 @@ result = subprocess.call(args, cwd=workspace_dir)
 last_build_config['result'] = result
 if command == 'build' and result == 0:
     # Now is the time to update the compile_commands.json used by vs code
-    subprocess.call(['./mach', '--log-no-times', 'build-backend', '-b', 'CompileDB'], cwd=workspace_dir)
+    subprocess.call(mach + ['--log-no-times', 'build-backend', '-b', 'CompileDB'], cwd=workspace_dir)
 
     # Since mach puts the ccache command in our compiledb, we need to strip that
     # information out so as to not confuse vs code
