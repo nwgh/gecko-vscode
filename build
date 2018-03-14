@@ -11,14 +11,14 @@ import sys
 
 def run_mach(args, cwd):
     if sys.platform == 'win32':
-        mach_dir = cwd.replace(':', '').replace('\\', '/')
-        mach_wrapper = '/'.join(['', mach_dir, '.vscode', 'mach_wrapper_win'])
+        mach_dir = '/' + cwd.replace(':', '').replace('\\', '/').lower()
+        mach_wrapper = '/'.join([mach_dir, '.vscode', 'mach_wrapper_win'])
         subprocess.call(['c:\\mozilla-build\\start-shell.bat', mach_wrapper, mach_dir] + args, cwd=cwd)
         try:
             mach_result = json.load(file(os.path.join(cwd, '.vscode', 'mach-result.json')))
             return mach_result['code']
         except Exception as e:
-            sys.stderr.write('Error getting mach result: %s' % (e,))
+            sys.stderr.write('Error getting mach result: %s\n' % (e,))
             return 1
 
     return subprocess.call(['./mach'] + args, cwd=cwd)
@@ -102,7 +102,7 @@ args = ['--log-no-times', 'build']
 if command == 'binaries':
     args.append('binaries')
 
-sys.stdout.write('> Running %s\n' % (' '.join(args),))
+sys.stdout.write('> Running mach %s\n' % (' '.join(args),))
 result = run_mach(args, workspace_dir)
 last_build_config['result'] = result
 if command == 'build' and result == 0:

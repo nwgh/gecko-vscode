@@ -1,10 +1,10 @@
 #!/bin/sh
 MACHDIR="$1"
 shift
-cd "$MACHDIR/.vscode"
-rm mach-result.json
-cd ..
+cd "$MACHDIR"
+if [[ -f .vscode/mach-result.json ]] ; then
+    rm .vscode/mach-result.json
+fi
 ./mach "$@"
 MACHRESULT="$?"
-cd .vscode
-echo "{\"code\": $MACHRESULT}" > mach-result.json
+echo "{\"code\": $MACHRESULT}" > .vscode/mach-result.json
