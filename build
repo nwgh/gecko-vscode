@@ -9,16 +9,16 @@ import subprocess
 import sys
 
 
-def ensure_sha(ref):
+def ensure_sha(ref, cwd):
     if ref.startswith('ref: '):
         ref = ref.split(' ', 1)[1]
-    return subprocess.check_output(['git', 'rev-parse', ref]).strip()
+    return subprocess.check_output(['git', 'rev-parse', ref], cwd=cwd).strip()
 
 
-def different_branch(ref):
-    ref = ensure_sha(ref)
-    head = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
-    if subprocess.call(['git', 'merge-base', '--is-ancestor', ref, head]) == 0:
+def different_branch(ref, cwd):
+    ref = ensure_sha(ref, cwd)
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=cwd).strip()
+    if subprocess.call(['git', 'merge-base', '--is-ancestor', ref, head], cwd=cwd) == 0:
         # ref is an ancestor of head, therefore we are effectively on the same
         # branch (for the purposes of building - headers won't have changed)
         return False
@@ -62,14 +62,17 @@ with file(build_config_file) as f:
 head_file = os.path.join(workspace_dir, '.git', 'HEAD')
 last_head = current_head = last_build_config['head']
 with file(head_file) as f:
-    current_head = ensure_sha(f.read().strip())
+    current_head = ensure_sha(f.read().strip(), workspace_dir)
 
 if forced_command:
     command = forced_command
     if forced_command == 'clobber':
         subprocess.call(mach + ['clobber'], cwd=workspace_dir)
         command = 'build'
-elif different_branch(last_head):
+elif sys.platform == 'win32':
+    # We can't rely on process exit codes on windows, so force always building
+    command = 'build'
+elif different_branch(last_head, workspace_dir):
     # We are on a branch that is not a descendent of the last branch we worked
     # on, so force a full rebuild to ensure new headers, etc are picked up.
     command = 'build'
