@@ -9,6 +9,21 @@ import subprocess
 import sys
 
 
+def run_mach(args, cwd):
+    if sys.platform == 'win32':
+        mach_dir = cwd.replace(':', '').replace('\\', '/')
+        mach_wrapper = '/'.join(['', mach_dir, '.vscode', 'mach_wrapper_win'])
+        subprocess.call(['c:\\mozilla-build\\start-shell.bat', mach_wrapper, mach_dir] + args, cwd=cwd)
+        try:
+            mach_result = json.load(file(os.path.join(cwd, '.vscode', 'mach-result.json')))
+            return mach_result['code']
+        except Exception as e:
+            sys.stderr.write('Error getting mach result: %s' % (e,))
+            return 1
+
+    return subprocess.call(['./mach'] + args, cwd=cwd)
+
+
 def ensure_sha(ref, cwd):
     if ref.startswith('ref: '):
         ref = ref.split(' ', 1)[1]
@@ -67,11 +82,8 @@ with file(head_file) as f:
 if forced_command:
     command = forced_command
     if forced_command == 'clobber':
-        subprocess.call(mach + ['clobber'], cwd=workspace_dir)
+        run_mach(['clobber'], workspace_dir)
         command = 'build'
-elif sys.platform == 'win32':
-    # We can't rely on process exit codes on windows, so force always building
-    command = 'build'
 elif different_branch(last_head, workspace_dir):
     # We are on a branch that is not a descendent of the last branch we worked
     # on, so force a full rebuild to ensure new headers, etc are picked up.
@@ -86,20 +98,25 @@ else:
 last_build_config['command'] = command
 last_build_config['head'] = current_head
 
-args = mach + ['--log-no-times', 'build']
+args = ['--log-no-times', 'build']
 if command == 'binaries':
     args.append('binaries')
 
 sys.stdout.write('> Running %s\n' % (' '.join(args),))
-result = subprocess.call(args, cwd=workspace_dir)
+result = run_mach(args, workspace_dir)
 last_build_config['result'] = result
 if command == 'build' and result == 0:
     # Now is the time to update the compile_commands.json used by vs code
-    subprocess.call(mach + ['--log-no-times', 'build-backend', '-b', 'CompileDB'], cwd=workspace_dir)
+    sys.stdout.write('> Generating CompileDB Backend\n')
+    run_mach(['--log-no-times', 'build-backend', '-b', 'CompileDB'], workspace_dir)
+    if sys.platform == 'win32':
+        # Also generate Visual Studio backend on windows
+        sys.stdout.write('> Generating Visual Studio Backend\n')
+        run_mach(['--log-no-times', 'build-backend', '-b', 'VisualStudio'], workspace_dir)
 
     # Since mach puts the ccache command in our compiledb, we need to strip that
     # information out so as to not confuse vs code
-    if ccache_path:
+    if ccache_path and sys.platform != 'win32':
         sed_command = 's/%s //g' % (ccache_path.replace('/', '\\/'),)
         compile_commands = os.path.join(object_dir, 'compile_commands.json')
         new_compile_commands = '%s.new' % (compile_commands,)
