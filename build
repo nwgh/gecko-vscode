@@ -9,8 +9,9 @@ import subprocess
 import sys
 
 
-def run_mach(args, cwd):
+def run_mach(args, cwd, timed):
     if sys.platform == 'win32':
+        # win32 ignores timed... for now
         mach_dir = '/' + cwd.replace(':', '').replace('\\', '/').lower()
         mach_wrapper = '/'.join([mach_dir, '.vscode', 'mach_wrapper_win'])
         subprocess.call(['c:\\mozilla-build\\start-shell.bat', mach_wrapper, mach_dir] + args, cwd=cwd)
@@ -21,22 +22,44 @@ def run_mach(args, cwd):
             sys.stderr.write('Error getting mach result: %s\n' % (e,))
             return 1
 
-    return subprocess.call(['./mach'] + args, cwd=cwd)
+    if timed:
+        mach = ['time', './mach']
+    else:
+        mach = ['./mach']
+    return subprocess.call(mach + args, cwd=cwd)
 
 
-def ensure_sha(ref, cwd):
-    if ref.startswith('ref: '):
-        ref = ref.split(' ', 1)[1]
-    return subprocess.check_output(['git', 'rev-parse', ref], cwd=cwd).strip()
+is_git = False
+is_hg = False
 
 
-def different_branch(ref, cwd):
-    ref = ensure_sha(ref, cwd)
-    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=cwd).strip()
+def different_branch(ref, head, cwd):
+    if is_git:
+        return different_branch_git(ref, head, cwd)
+    elif is_hg:
+        return different_branch_hg(ref_head, cwd)
+    return different_branch_wat(ref, head, cwd)
+
+
+def different_branch_git(ref, head, cwd):
     if subprocess.call(['git', 'merge-base', '--is-ancestor', ref, head], cwd=cwd) == 0:
         # ref is an ancestor of head, therefore we are effectively on the same
         # branch (for the purposes of building - headers won't have changed)
         return False
+    return True
+
+
+def different_branch_hg(ref, head, cwd):
+    output = subprocess.check_output(['hg', 'log', '-r', '%s::%s' % (ref, head)], cwd=cwd).strip()
+    if output:
+        # ref is an ancestor of head, therefore we are effectively on the same
+        # branch (for the purposes of building - headers won't have changed)
+        return False
+    return True
+
+
+def different_branch_wat(ref, head, cwd):
+    # Just for schitzengiggel, assume things have changed
     return True
 
 if sys.platform != 'win32':
@@ -48,6 +71,16 @@ else: # sys.platform == 'win32'
     if not workspace_dir:
         sys.stderr.write('Could not find workspace folder\n')
         sys.exit(1)
+
+if os.path.exists(os.path.join(workspace_dir, '.git')):
+    is_git = True
+    is_hg = False
+elif os.path.exists(os.path.join(workspace_dir, '.hg')):
+    is_git = False
+    is_hg = True
+else:
+    sys.stderr.write('Not a git or hg checkout\n')
+    sys.exit(1)
 
 forced_command = None
 if len(sys.argv) > 2:
@@ -74,17 +107,21 @@ last_build_config = {'result': None, 'command': 'build', 'head': None}
 with file(build_config_file) as f:
     last_build_config.update(json.load(f))
 
-head_file = os.path.join(workspace_dir, '.git', 'HEAD')
 last_head = current_head = last_build_config['head']
-with file(head_file) as f:
-    current_head = ensure_sha(f.read().strip(), workspace_dir)
+if is_git:
+    current_head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=workspace_dir).strip()
+elif is_hg:
+    current_head = subprocess.check_output(['hg', 'id', '-i', '-r', '.'], cwd=workspace_dir).strip()
+else:
+    sys.stderr.write('WTF?!')
+    sys.exit(1)
 
 if forced_command:
     command = forced_command
     if forced_command == 'clobber':
         run_mach(['clobber'], workspace_dir)
         command = 'build'
-elif different_branch(last_head, workspace_dir):
+elif different_branch(last_head, current_head, workspace_dir):
     # We are on a branch that is not a descendent of the last branch we worked
     # on, so force a full rebuild to ensure new headers, etc are picked up.
     command = 'build'
@@ -103,16 +140,16 @@ if command == 'binaries':
     args.append('binaries')
 
 sys.stdout.write('> Running mach %s\n' % (' '.join(args),))
-result = run_mach(args, workspace_dir)
+result = run_mach(args, workspace_dir, True)
 last_build_config['result'] = result
 if command == 'build' and result == 0:
     # Now is the time to update the compile_commands.json used by vs code
     sys.stdout.write('> Generating CompileDB Backend\n')
-    run_mach(['--log-no-times', 'build-backend', '-b', 'CompileDB'], workspace_dir)
+    run_mach(['--log-no-times', 'build-backend', '-b', 'CompileDB'], workspace_dir, False)
     if sys.platform == 'win32':
         # Also generate Visual Studio backend on windows
         sys.stdout.write('> Generating Visual Studio Backend\n')
-        run_mach(['--log-no-times', 'build-backend', '-b', 'VisualStudio'], workspace_dir)
+        run_mach(['--log-no-times', 'build-backend', '-b', 'VisualStudio'], workspace_dir, False)
 
     # Since mach puts the ccache command in our compiledb, we need to strip that
     # information out so as to not confuse vs code
