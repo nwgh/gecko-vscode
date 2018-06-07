@@ -78,6 +78,8 @@
         "nestegg.c": "cpp",
         "ftcmanag.c": "cpp",
         "comment.c": "cpp",
-        "*.cfg": "cpp"
-    }
+        "*.cfg": "cpp",
+        "__locale": "cpp"
+    },
+    "git.ignoreLimitWarning": true
 }
