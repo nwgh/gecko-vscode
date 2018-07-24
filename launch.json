@@ -71,6 +71,34 @@
             "processId": "${command:pickProcess}",
             "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox.exe",
             "MIMode": "gdb"
+        },
+        {
+            "name": "Linux RR Replay",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
+            "args": [],
+            "miDebuggerServerAddress": "localhost:50505",
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
+            "environment": [],
+            "externalConsole": true,
+            "linux": {
+                "MIMode": "gdb",
+                "setupCommands": [
+                    {
+                        "description": "Set up to resolve symbols",
+                        "text": "set sysroot /",
+                        "ignoreFailures": false
+                    }
+                ]
+            },
+            "osx": {
+                "MIMode": "gdb"
+            },
+            "windows": {
+                "MIMode": "gdb"
+            }
         }
     ]
 }
