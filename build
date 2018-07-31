@@ -103,9 +103,10 @@ for arg in environment['mozconfig']['configure_args']:
 
 vscode_dir = os.path.join(workspace_dir, '.vscode')
 build_config_file = os.path.join(vscode_dir, 'last-build-config.json')
-last_build_config = {'result': None, 'command': 'build', 'head': None}
-with file(build_config_file) as f:
-    last_build_config.update(json.load(f))
+last_build_config = {'result': 1, 'command': 'build', 'head': ''}
+if os.path.exists(build_config_file):
+    with file(build_config_file) as f:
+        last_build_config.update(json.load(f))
 
 last_head = current_head = last_build_config['head']
 if is_git:
