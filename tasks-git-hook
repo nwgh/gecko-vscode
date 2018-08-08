@@ -1,3 +1,0 @@
-#!/bin/sh
-root="$(git rev-parse --show-toplevel)"
-cp "${root}/.vscode/tasks-nwgh.json" "${root}/.vscode/tasks.json"

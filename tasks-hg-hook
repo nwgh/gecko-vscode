@@ -1,3 +1,0 @@
-#!/bin/sh
-root="$(hg root)"
-cp "${root}/.vscode/tasks-nwgh.json" "${root}/.vscode/tasks.json"

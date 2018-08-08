@@ -10,8 +10,8 @@
             "environment": [{"name": "MOZ_LOG", "value": "timestamp,nsHttp:5"},
                             {"name": "MOZ_LOG_FILE", "value": "/tmp/nspr.log"},
                             {"name": "SSLKEYLOGFILE", "value": "/tmp/nsskeys.log"}],
-            "program": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/firefox",
-            "cwd": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS",
+            "program": "${workspaceFolder:Source}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/firefox",
+            "cwd": "${workspaceFolder:Source}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS",
             "args": ["-no-remote", "-profile", "${env:HOME}/.mozprofiles/debug"]
         },
         {
@@ -23,8 +23,8 @@
                             {"name": "MOZ_LOG_FILE", "value": "/tmp/nspr.log"},
                             {"name": "SSLKEYLOGFILE", "value": "/tmp/nsskeys.log"}],
             "MIMode": "gdb",
-            "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
-            "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
+            "program": "${workspaceFolder:Source}/obj-dbg-noopt/dist/bin/firefox",
+            "cwd": "${workspaceFolder:Source}/obj-dbg-noopt/dist/bin",
             "args": ["-no-remote", "-profile", "${env:HOME}/.mozprofiles/debug"]
         },
         {
@@ -36,8 +36,8 @@
                             {"name": "MOZ_LOG_FILE", "value": "/tmp/nspr.log"},
                             {"name": "SSLKEYLOGFILE", "value": "/tmp/nsskeys.log"}],
             "MIMode": "gdb",
-            "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox.exe",
-            "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
+            "program": "${workspaceFolder:Source}/obj-dbg-noopt/dist/bin/firefox.exe",
+            "cwd": "${workspaceFolder:Source}/obj-dbg-noopt/dist/bin",
             "args": ["-no-remote", "-profile", "${env:HOME}/.mozprofiles/debug"]
         },
         {
@@ -45,7 +45,7 @@
             "type": "cppdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",
-            "program": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/firefox",
+            "program": "${workspaceFolder:Source}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/firefox",
             "MIMode": "lldb"
         },
         {
@@ -53,7 +53,7 @@
             "type": "cppdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",
-            "program": "${workspaceRoot}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container",
+            "program": "${workspaceFolder:Source}/obj-dbg/dist/NightlyDebug.app/Contents/MacOS/plugin-container.app/Contents/MacOS/plugin-container",
             "MIMode": "lldb"
         },
         {
@@ -61,7 +61,7 @@
             "type": "cppdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",
-            "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
+            "program": "${workspaceFolder:Source}/obj-dbg-noopt/dist/bin/firefox",
             "MIMode": "gdb"
         },
         {
@@ -69,18 +69,18 @@
             "type": "cppdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",
-            "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox.exe",
+            "program": "${workspaceFolder:Source}/obj-dbg-noopt/dist/bin/firefox.exe",
             "MIMode": "gdb"
         },
         {
             "name": "Linux RR Replay",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/obj-dbg-noopt/dist/bin/firefox",
+            "program": "${workspaceFolder:Source}/obj-dbg-noopt/dist/bin/firefox",
             "args": [],
             "miDebuggerServerAddress": "localhost:50505",
             "stopAtEntry": false,
-            "cwd": "${workspaceRoot}/obj-dbg-noopt/dist/bin",
+            "cwd": "${workspaceFolder:Source}/obj-dbg-noopt/dist/bin",
             "environment": [],
             "externalConsole": true,
             "linux": {

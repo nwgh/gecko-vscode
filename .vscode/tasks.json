@@ -1,0 +1,67 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "command": "${workspaceFolder:Source}/mach",
+    "options": {
+        "cwd": "${workspaceFolder:Source}"
+    },
+    "windows": {
+      "command": "\"\\mozilla-build\\start-shell.bat mach\""
+    },
+    "args": ["--log-no-times"],
+    "echoCommand": true,
+    "tasks": [
+      {
+        "label": "build-smart",
+        "type":"shell",
+        "command": "${workspaceFolder:Build}/build",
+        "windows": {
+          "command": "\"\\mozilla-build\\start-shell.bat /c/src/mozilla/gecko-vscode/build\"",
+          "args": [],
+          "options": {
+            "env": {"NWGH_WORKSPACE_FOLDER": "${workspaceFolder:Source}"}
+          }
+        },
+        "args": ["${workspaceFolder:Source}"],
+        "problemMatcher": {
+          "owner": "cpp",
+          "fileLocation": "absolute",
+          "pattern": {
+            "regexp": "^.*?([^\\s]*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+          }
+        },
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        }
+      },
+      {
+        "label": "build-full",
+        "type":"shell",
+        "command": "${workspaceFolder:Build}/build",
+        "windows": {
+          "command": "\"\\mozilla-build\\start-shell.bat /c/src/mozilla/gecko-vscode/build\""
+        },
+        "args": ["${workspaceFolder:Source}", "force"],
+        "problemMatcher": {
+          "owner": "cpp",
+          "fileLocation": "absolute",
+          "pattern": {
+            "regexp": "^.*?([^\\s]*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+          }
+        },
+        "group": "build"
+      }
+    ]
+}

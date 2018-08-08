@@ -34,6 +34,10 @@ is_hg = False
 
 
 def different_branch(ref, head, cwd):
+    if not ref:
+        # short-circuit for first-time run
+        return True
+
     if is_git:
         return different_branch_git(ref, head, cwd)
     elif is_hg:
