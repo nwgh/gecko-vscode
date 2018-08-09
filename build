@@ -41,7 +41,7 @@ def different_branch(ref, head, cwd):
     if is_git:
         return different_branch_git(ref, head, cwd)
     elif is_hg:
-        return different_branch_hg(ref_head, cwd)
+        return different_branch_hg(ref, head, cwd)
     return different_branch_wat(ref, head, cwd)
 
 
