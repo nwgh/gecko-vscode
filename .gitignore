@@ -1,5 +1,1 @@
-.browse.VC.db*
-extensions.json
-tasks.json
-last-build-config.json
-mach-result.json
+.vscode/settings.json
