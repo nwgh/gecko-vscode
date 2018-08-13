@@ -27,4 +27,5 @@ This is `example-code-workspace` and shows how you might want to set things up. 
  - `cp vscode-gecko/example-code-workspace gecko.code-workspace` (note the difference in `-` versus `.` before `code-workspace` - this is important!)
  - `vi gecko.code-workspace` (edit to make sure all the paths are right for your checkouts)
  - `code gecko.code-workspace`
+
 **NB: If you want this all to work, do not change the values of the `"name"` keys in the `"folders"` section. You are, however, free to change the values of the `"path"` keys to suit your particular directory layout.**
