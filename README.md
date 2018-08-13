@@ -5,6 +5,7 @@ This repository provides a few things that make hacking gecko in Visual Studio C
 
 ## A Build Script
 This is a "smart" build script (`build`) that does a few things:
+
  * Chooses whether to do a full build or a binaries build based on (1) what the last build type performed is, (2) whether or not the build was successful, (3) whether or not you appear to have switched branches/bookmarks since the last build.
  * Refreshes the compile_commands.json for your repo after a successful build (so that VS Code's C/C++ extension can have all the right info).
  * Tries to make this all work on windows, too, in conjunction with `mach_wrapper_win`.
@@ -16,11 +17,13 @@ To make use of this, `cd` into your `${TOPSRCDIR}/.vscode` and `ln -s /path/to/g
 
 ## Some Extra VS Code Configuration
 This lives in `.vscode` just like it would for any normal project, and includes:
+
  * Launch/debug configurations for Mac, Linux, and Windows (`.vscode/launch.json`)
  * Build configurations to be able to use the smart build script with VS Code's usual build keybindings (`.vscode/tasks.json`)
  
 ## An Example Multi-Root Workspace Setup
 This is `example-code-workspace` and shows how you might want to set things up. Here's what I do:
+
  * `cd ~/src`
  * `git clone https://github.com/nwgh/gecko-vscode vscode-gecko` (name swapped so my tab completion works better)
  * `git clone https://gitlab.com/nwgh/gecko` (this is a git-cinnabar clone where I keep all my private WIP branches. See [the git-cinnabar documentation](https://github.com/glandium/git-cinnabar/wiki) for more info on git-cinnabar.)
