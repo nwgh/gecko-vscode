@@ -54,7 +54,12 @@ def different_branch_git(ref, head, cwd):
 
 
 def different_branch_hg(ref, head, cwd):
-    output = subprocess.check_output(['hg', 'log', '-r', '%s::%s' % (ref, head)], cwd=cwd).strip()
+    try:
+        output = subprocess.check_output(['hg', 'log', '-r', '%s::%s' % (ref, head)], cwd=cwd).strip()
+    except subprocess.CalledProcessError:
+        # Something failed - perhaps one of the refs we asked about is obsolete. Assume
+        # a different branch, for safety's sake.
+        return True
     if output:
         # ref is an ancestor of head, therefore we are effectively on the same
         # branch (for the purposes of building - headers won't have changed)
