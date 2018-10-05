@@ -1,22 +1,74 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # A script to ensure that, after we build, we regenerate the CompileDB so that
 # vs code can complete things properly. Also tries to be smart and do a full
 # build if necessary, and do just build binaries when possible to save time.
 
+import copy
 import json
 import os
 import subprocess
+import shutil
 import sys
 
 
-def run_mach(args, cwd, timed):
+# This function is mostly shamelessly cribbed from mozbuild
+def notify(msg):
+    if sys.platform.startswith('darwin'):
+        notifier = shutil.which('terminal-notifier')
+        if not notifier:
+            sys.stdout.write('Install terminal-notifier to get notifications '
+                             'when builds finish.')
+            return
+
+        subprocess.call([notifier,
+                         '-title', 'Mozilla Build System',
+                         '-group', 'mozbuild',
+                         '-message', msg])
+    elif sys.platform.startswith('win'):
+        from ctypes import Structure, windll, POINTER, sizeof
+        from ctypes.wintypes import DWORD, HANDLE, WINFUNCTYPE, BOOL, UINT
+        class FLASHWINDOW(Structure):
+            _fields_ = [("cbSize", UINT),
+                        ("hwnd", HANDLE),
+                        ("dwFlags", DWORD),
+                        ("uCount", UINT),
+                        ("dwTimeout", DWORD)]
+        FlashWindowExProto = WINFUNCTYPE(BOOL, POINTER(FLASHWINDOW))
+        FlashWindowEx = FlashWindowExProto(("FlashWindowEX", windll.user32))
+        FLASHW_CAPTION = 0x01
+        FLASHW_TRAY = 0x02
+        FLASHW_TIMERNOFG = 0x0C
+        console = windll.kernel32.GetConsoleWindow()
+        if not console:
+            return
+        params = FLASHWINDOW(sizeof(FLASHWINDOW),
+                             console,
+                             FLASHW_CAPTION | FLASHW_TRAY | FLASHW_TIMERNOFG,
+                             3, 0)
+        FlashWindowEx(params)
+    else: # linux
+        notifier = shutil.which('notify-send')
+        if not notifier:
+            sys.stdout.write('Install notify-send to get notifications when '
+                             'builds finish')
+            return
+
+        subprocess.call([notifier, '--app-name=Mozilla Build System',
+                         'Mozilla Build System', msg])
+
+
+def run_mach(args, cwd, timed=False, disable_notifications=False):
+    env = copy.deepcopy(os.environ)
+    if disable_notifications:
+        env['MOZ_NOSPAM'] = '1'
+
     if sys.platform == 'win32':
         # win32 ignores timed... for now
         mach_dir = '/' + cwd.replace(':', '').replace('\\', '/').lower()
         mach_wrapper = '/'.join([mach_dir, '.vscode', 'mach_wrapper_win'])
-        subprocess.call(['c:\\mozilla-build\\start-shell.bat', mach_wrapper, mach_dir] + args, cwd=cwd)
+        subprocess.call(['c:\\mozilla-build\\start-shell.bat', mach_wrapper, mach_dir] + args, cwd=cwd, env=env)
         try:
-            mach_result = json.load(file(os.path.join(cwd, '.vscode', 'mach-result.json')))
+            mach_result = json.load(open(os.path.join(cwd, '.vscode', 'mach-result.json')))
             return mach_result['code']
         except Exception as e:
             sys.stderr.write('Error getting mach result: %s\n' % (e,))
@@ -26,7 +78,7 @@ def run_mach(args, cwd, timed):
         mach = ['time', './mach']
     else:
         mach = ['./mach']
-    return subprocess.call(mach + args, cwd=cwd)
+    return subprocess.call(mach + args, cwd=cwd, env=env)
 
 
 is_git = False
@@ -114,14 +166,14 @@ vscode_dir = os.path.join(workspace_dir, '.vscode')
 build_config_file = os.path.join(vscode_dir, 'last-build-config.json')
 last_build_config = {'result': 1, 'command': 'build', 'head': ''}
 if os.path.exists(build_config_file):
-    with file(build_config_file) as f:
+    with open(build_config_file) as f:
         last_build_config.update(json.load(f))
 
 last_head = current_head = last_build_config['head']
 if is_git:
-    current_head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=workspace_dir).strip()
+    current_head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=workspace_dir).strip().decode('utf-8')
 elif is_hg:
-    current_head = subprocess.check_output(['hg', 'id', '-i', '-r', '.'], cwd=workspace_dir).strip()
+    current_head = subprocess.check_output(['hg', 'id', '-i', '-r', '.'], cwd=workspace_dir).strip().decode('utf-8')
 else:
     sys.stderr.write('WTF?!')
     sys.exit(1)
@@ -150,16 +202,16 @@ if command == 'binaries':
     args.append('binaries')
 
 sys.stdout.write('> Running mach %s\n' % (' '.join(args),))
-result = run_mach(args, workspace_dir, True)
+result = run_mach(args, workspace_dir, True, command == 'build')
 last_build_config['result'] = result
 if command == 'build' and result == 0:
     # Now is the time to update the compile_commands.json used by vs code
     sys.stdout.write('> Generating CompileDB Backend\n')
-    run_mach(['--log-no-times', 'build-backend', '-b', 'CompileDB'], workspace_dir, False)
+    run_mach(['--log-no-times', 'build-backend', '-b', 'CompileDB'], workspace_dir)
     if sys.platform == 'win32':
         # Also generate Visual Studio backend on windows
         sys.stdout.write('> Generating Visual Studio Backend\n')
-        run_mach(['--log-no-times', 'build-backend', '-b', 'VisualStudio'], workspace_dir, False)
+        run_mach(['--log-no-times', 'build-backend', '-b', 'VisualStudio'], workspace_dir)
 
     # Since mach puts the ccache command in our compiledb, we need to strip that
     # information out so as to not confuse vs code
@@ -167,11 +219,16 @@ if command == 'build' and result == 0:
         sed_command = 's/%s //g' % (ccache_path.replace('/', '\\/'),)
         compile_commands = os.path.join(object_dir, 'compile_commands.json')
         new_compile_commands = '%s.new' % (compile_commands,)
-        with file(compile_commands) as old:
-            with file(new_compile_commands, 'w') as new:
+        with open(compile_commands) as old:
+            with open(new_compile_commands, 'w') as new:
                 subprocess.call(['sed', '-e', sed_command], stdin=old, stdout=new)
         os.rename(new_compile_commands, compile_commands)
 
+if command == 'build':
+    notify('Build complete' if not result else 'Build failed')
+
 # Update our on-disk status
-with file(build_config_file, 'w') as f:
+with open(build_config_file, 'w') as f:
     json.dump(last_build_config, f)
+
+sys.exit(result)
