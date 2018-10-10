@@ -46,7 +46,7 @@
                 "/usr/include/c++/6.3.1/x86_64-redhat-linux",
                 "/usr/include/c++/6.3.1/backward",
                 "/usr/local/include",
-                "/home/nwgh/.local/clang/current/lib/clang/3.8.0/include",
+                "/home/nwgh/.local/clang/current/lib/clang/4.0.1/include",
                 "/usr/include",
                 "${workspaceFolder:Source}"
             ],
@@ -56,7 +56,7 @@
                     "/usr/include/c++/6.3.1/x86_64-redhat-linux",
                     "/usr/include/c++/6.3.1/backward",
                     "/usr/local/include",
-                    "/home/nwgh/.local/clang/current/lib/clang/3.8.0/include",
+                    "/home/nwgh/.local/clang/current/lib/clang/4.0.1/include",
                     "/usr/include",
                     "${workspaceFolder:Source}"
                 ]
