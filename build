@@ -4,11 +4,28 @@
 # build if necessary, and do just build binaries when possible to save time.
 
 import copy
+import datetime
 import json
 import os
 import subprocess
 import shutil
 import sys
+import time
+
+
+setup_start = time.time()
+clobber_start = None # May not exist
+mach_start = None # Will exist
+compiledb_start = None # May not exist
+vsproj_start = None # May not exist, but compiledb_start will if it does
+process_end = None # Will exist
+
+
+def make_timedelta(start, end):
+    delta = end - start
+    sec = int(delta)
+    usec = int((delta - sec) * 1000000)
+    return datetime.timedelta(seconds=sec, microseconds=usec)
 
 
 # This function is mostly shamelessly cribbed from mozbuild
@@ -57,13 +74,11 @@ def notify(msg):
                          'Mozilla Build System', msg])
 
 
-def run_mach(args, cwd, timed=False, disable_notifications=False):
+def run_mach(args, cwd):
     env = copy.deepcopy(os.environ)
-    if disable_notifications:
-        env['MOZ_NOSPAM'] = '1'
+    env['MOZ_NOSPAM'] = '1'
 
     if sys.platform == 'win32':
-        # win32 ignores timed... for now
         mach_dir = '/' + cwd.replace(':', '').replace('\\', '/').lower()
         mach_wrapper = '/'.join([mach_dir, '.vscode', 'mach_wrapper_win'])
         subprocess.call(['c:\\mozilla-build\\start-shell.bat', mach_wrapper, mach_dir] + args, cwd=cwd, env=env)
@@ -74,10 +89,7 @@ def run_mach(args, cwd, timed=False, disable_notifications=False):
             sys.stderr.write('Error getting mach result: %s\n' % (e,))
             return 1
 
-    if timed:
-        mach = ['time', './mach']
-    else:
-        mach = ['./mach']
+    mach = ['./mach']
     return subprocess.call(mach + args, cwd=cwd, env=env)
 
 
@@ -186,6 +198,7 @@ else:
 if forced_command:
     command = forced_command
     if forced_command == 'clobber':
+        clobber_start = time.time()
         run_mach(['clobber'], workspace_dir)
         command = 'build'
 elif different_branch(last_head, current_head, workspace_dir):
@@ -210,15 +223,18 @@ if command == 'binaries':
     args.append('binaries')
 
 sys.stdout.write('> Running mach %s\n' % (' '.join(args),))
-result = run_mach(args, workspace_dir, True, command == 'build')
+mach_start = time.time()
+result = run_mach(args, workspace_dir)
 last_build_config['result'] = result
 if command == 'build' and result == 0:
     # Now is the time to update the compile_commands.json used by vs code
     sys.stdout.write('> Generating CompileDB Backend\n')
+    compiledb_start = time.time()
     run_mach(['--log-no-times', 'build-backend', '-b', 'CompileDB'], workspace_dir)
     if sys.platform == 'win32':
         # Also generate Visual Studio backend on windows
         sys.stdout.write('> Generating Visual Studio Backend\n')
+        vsproj_start = time.time()
         run_mach(['--log-no-times', 'build-backend', '-b', 'VisualStudio'], workspace_dir)
 
     # Since mach puts the ccache command in our compiledb, we need to strip that
@@ -230,13 +246,48 @@ if command == 'build' and result == 0:
         with open(compile_commands) as old:
             with open(new_compile_commands, 'w') as new:
                 subprocess.call(['sed', '-e', sed_command], stdin=old, stdout=new)
+
         os.rename(new_compile_commands, compile_commands)
 
-if command == 'build':
+if command == 'build' or command == 'binaries':
     notify('Build complete' if not result else 'Build failed')
 
 # Update our on-disk status
 with open(build_config_file, 'w') as f:
     json.dump(last_build_config, f)
 
+process_end = time.time()
+
+times = []
+total_time = make_timedelta(setup_start, process_end)
+if clobber_start:
+    setup_time = make_timedelta(setup_start, clobber_start)
+    times.append(('Setup', setup_time))
+    clobber_time = make_timedelta(clobber_start, mach_start)
+    times.append(('Clobber', clobber_time))
+else:
+    setup_time = make_timedelta(setup_start, mach_start)
+    times.append(('Setup', setup_time))
+if compiledb_start:
+    mach_time = make_timedelta(mach_start, compiledb_start)
+    times.append(('Build', mach_time))
+    if vsproj_start:
+        compiledb_time = make_timedelta(compiledb_start, vsproj_start)
+        times.append(('CompileDB Generation', compiledb_time))
+        vsproj_time = make_timedelta(vsproj_start, process_end)
+        times.append(('VS Project Generation', vsproj_time))
+    else:
+        compiledb_time = make_timedelta(compiledb_start, process_end)
+        times.append(('CompileDB Generation', compiledb_time))
+else:
+    mach_time = make_timedelta(mach_start, process_end)
+    times.append(('Build', mach_time))
+
+sys.stdout.write('Timings\n')
+for t in times:
+    sys.stdout.write('\t%s: %s\n' % (t[0], str(t[1])))
+sys.stdout.write('\tTotal: %s\n' % (str(total_time),))
+
+if result:
+    sys.stdout.write('Exiting with error %d\n' % (result,))
 sys.exit(result)
