@@ -181,10 +181,18 @@ for arg in environment['mozconfig']['configure_args']:
 
 vscode_dir = os.path.join(workspace_dir, '.vscode')
 build_config_file = os.path.join(vscode_dir, 'last-build-config.json')
+build_config_history_file = os.path.join(vscode_dir, 'build-config-history.json')
 last_build_config = {'result': 1, 'command': 'build', 'head': ''}
-if os.path.exists(build_config_file):
+build_config_history = []
+if os.path.exists(build_config_history_file):
+    with open(build_config_history_file) as f:
+        build_config_history = json.load(f)
+        if len(build_config_history) > 0:
+            last_build_config = build_config_history[0]
+elif os.path.exists(build_config_file):
     with open(build_config_file) as f:
         last_build_config.update(json.load(f))
+    build_config_history.append(last_build_config)
 
 last_head = current_head = last_build_config['head']
 if is_git:
@@ -255,6 +263,14 @@ if command == 'build' or command == 'binaries':
 # Update our on-disk status
 with open(build_config_file, 'w') as f:
     json.dump(last_build_config, f)
+
+# Put our config at the head of the history (if it's changed) and save it
+if last_build_config['command'] != build_config_history[0]['command'] or \
+   last_build_config['head'] != build_config_history[0]['head'] or \
+   last_build_config['result'] != build_config_history[0]['result']:
+    build_config_history.insert(0, last_build_config)
+with open(build_config_history_file, 'w') as f:
+    json.dump(build_config_history, f)
 
 process_end = time.time()
 
