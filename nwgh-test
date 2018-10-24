@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo "argv:"
+echo "$@"
+echo
+echo "env:"
+env
+echo

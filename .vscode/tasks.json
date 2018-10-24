@@ -13,17 +13,30 @@
     "echoCommand": true,
     "tasks": [
       {
+        "label": "nwgh-test",
+        "type": "shell",
+        "command": "${workspaceFolder:Build}/nwgh-test",
+        "args": [
+          "${workspaceFolder:Source}"
+        ],
+        "problemMatcher": []
+      },
+      {
         "label": "build-smart",
-        "type":"shell",
+        "type": "shell",
         "command": "${workspaceFolder:Build}/build",
         "windows": {
           "command": "\"\\mozilla-build\\start-shell.bat /c/src/mozilla/gecko-vscode/build\"",
           "args": [],
           "options": {
-            "env": {"NWGH_WORKSPACE_FOLDER": "${workspaceFolder:Source}"}
+            "env": {
+              "NWGH_WORKSPACE_FOLDER": "${workspaceFolder:Source}"
+            }
           }
         },
-        "args": ["${workspaceFolder:Source}"],
+        "args": [
+          "${workspaceFolder:Source}"
+        ],
         "problemMatcher": {
           "owner": "cpp",
           "fileLocation": "absolute",
@@ -37,18 +50,21 @@
           }
         },
         "group": {
-            "kind": "build",
-            "isDefault": true
+          "kind": "build",
+          "isDefault": true
         }
       },
       {
         "label": "build-full",
-        "type":"shell",
+        "type": "shell",
         "command": "${workspaceFolder:Build}/build",
         "windows": {
           "command": "\"\\mozilla-build\\start-shell.bat /c/src/mozilla/gecko-vscode/build\""
         },
-        "args": ["${workspaceFolder:Source}", "force"],
+        "args": [
+          "${workspaceFolder:Source}",
+          "force"
+        ],
         "problemMatcher": {
           "owner": "cpp",
           "fileLocation": "absolute",
