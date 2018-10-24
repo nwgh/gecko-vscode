@@ -226,7 +226,12 @@ else:
 last_build_config['command'] = command
 last_build_config['head'] = current_head
 
-args = ['--log-no-times', 'build']
+args = ['build']
+if os.environ.get('VSCODE_TASK', None):
+    # Don't want times shown when running as a task under vs code, so that the
+    # error parser can properly find the errors and put them in the problems
+    # panel.
+    args.insert(0, '--log-no-times')
 if command == 'binaries':
     args.append('binaries')
 
@@ -238,12 +243,12 @@ if command == 'build' and result == 0:
     # Now is the time to update the compile_commands.json used by vs code
     sys.stdout.write('> Generating CompileDB Backend\n')
     compiledb_start = time.time()
-    run_mach(['--log-no-times', 'build-backend', '-b', 'CompileDB'], workspace_dir)
+    run_mach(['build-backend', '-b', 'CompileDB'], workspace_dir)
     if sys.platform == 'win32':
         # Also generate Visual Studio backend on windows
         sys.stdout.write('> Generating Visual Studio Backend\n')
         vsproj_start = time.time()
-        run_mach(['--log-no-times', 'build-backend', '-b', 'VisualStudio'], workspace_dir)
+        run_mach(['build-backend', '-b', 'VisualStudio'], workspace_dir)
 
     # Since mach puts the ccache command in our compiledb, we need to strip that
     # information out so as to not confuse vs code
