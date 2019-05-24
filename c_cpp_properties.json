@@ -42,22 +42,11 @@
             "name": "Linux",
             "compileCommands": "${workspaceFolder:Source}/obj-dbg-noopt/compile_commands.json",
             "includePath": [
-                "/usr/include/c++/6.3.1",
-                "/usr/include/c++/6.3.1/x86_64-redhat-linux",
-                "/usr/include/c++/6.3.1/backward",
-                "/usr/local/include",
-                "/home/nwgh/.local/clang/current/lib/clang/4.0.1/include",
-                "/usr/include",
-                "${workspaceFolder:Source}"
+                "${workspaceFolder:Source}/**"
             ],
             "browse": {
                 "path": [
-                    "/usr/include/c++/6.3.1",
-                    "/usr/include/c++/6.3.1/x86_64-redhat-linux",
-                    "/usr/include/c++/6.3.1/backward",
-                    "/usr/local/include",
-                    "/home/nwgh/.local/clang/current/lib/clang/4.0.1/include",
-                    "/usr/include",
+                    "/home/nwgh/.mozbuild/clang/include",
                     "${workspaceFolder:Source}"
                 ]
             },
@@ -66,7 +55,7 @@
                 "XP_UNIX"
             ],
             "intelliSenseMode": "clang-x64",
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/home/nwgh/.mozbuild/clang/bin/clang",
             "cStandard": "c11",
             "cppStandard": "c++17"
         },
@@ -88,10 +77,5 @@
             "cppStandard": "c++17"
         }
     ],
-    "clang_format": {
-        "style": "file",
-        "fallback-style": "LLVM",
-        "sort-includes": "false"
-    },
     "version": 4
 }
