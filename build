@@ -270,7 +270,8 @@ with open(build_config_file, 'w') as f:
     json.dump(last_build_config, f)
 
 # Put our config at the head of the history (if it's changed) and save it
-if last_build_config['command'] != build_config_history[0]['command'] or \
+if len(build_config_history) == 0 or \
+   last_build_config['command'] != build_config_history[0]['command'] or \
    last_build_config['head'] != build_config_history[0]['head'] or \
    last_build_config['result'] != build_config_history[0]['result']:
     build_config_history.insert(0, last_build_config)
