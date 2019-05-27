@@ -4,24 +4,12 @@
             "name": "Mac",
             "compileCommands": "${workspaceFolder:Source}/obj-dbg/compile_commands.json",
             "includePath": [
-                "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
                 "/usr/local/include",
-                "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include",
-                "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
-                "/usr/include/machine",
-                "/usr/include",
-                "${workspaceFolder:Source}/nsprpub/pr/include",
-                "${workspaceFolder:Source}"
+                "${workspaceFolder:Source}/**"
             ],
             "browse": {
                 "path": [
-                    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1",
                     "/usr/local/include",
-                    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include",
-                    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
-                    "/usr/include/machine",
-                    "/usr/include",
-                    "${workspaceFolder:Source}/nsprpub/pr/include",
                     "${workspaceFolder:Source}"
                 ]
             },
